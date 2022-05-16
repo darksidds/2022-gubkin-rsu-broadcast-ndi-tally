@@ -1,1 +1,0 @@
-cmd /K set PATH=%PATH%C:\Program Files\NDI\NDI 5 SDK\Bin\x64\
