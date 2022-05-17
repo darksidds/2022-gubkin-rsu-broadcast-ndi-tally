@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cstdio>
 #include <string.h>
 #include <chrono>
@@ -16,10 +17,10 @@
 
 int main(int argc, char* argv[])
 {	// Not required, but "correct" (see the SDK documentation)
-	if (!NDIlib_initialize()) return 0;
+	if (!NDIlib_initialize()) { std::cout << "NDI Library initialization error\n"; return 0; }
 
 	// Run a command line option to specify the source
-	if (argc != 2) return 0;
+	if (argc != 2) { std::cout << "1 argument required\n"; return 0; }
 
 	// We are going to create a receiver that receives very little data from the source.
 	NDIlib_recv_create_v3_t recv_desc;
