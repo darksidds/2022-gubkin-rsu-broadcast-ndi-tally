@@ -17,14 +17,20 @@
 
 int main(int argc, char* argv[])
 {	// Not required, but "correct" (see the SDK documentation)
-	if (!NDIlib_initialize()) { std::cout << "NDI Library initialization error\n"; return 0; }
+	if (!NDIlib_initialize()) { 
+		std::cout << "NDI Library initialization error\n"; 
+		return 0; 
+	}
 
 	// Run a command line option to specify the source
-	if (argc != 2) { std::cout << "1 argument required\n"; return 0; }
+	if (argc != 2) { 
+		std::cout << "1 argument required\n"; 
+		return 0;
+	}
 
 	// We are going to create a receiver that receives very little data from the source.
 	NDIlib_recv_create_v3_t recv_desc;
-	recv_desc.bandwidth = NDIlib_recv_bandwidth_metadata_only;
+	recv_desc.bandwidth = NDIlib_recv_bandwidth_lowest;
 	recv_desc.source_to_connect_to.p_ndi_name = argv[1];
 	
 	// We now have at least one source, so we create a receiver to look at it.
@@ -36,8 +42,18 @@ int main(int argc, char* argv[])
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(5);)
 	{	// We are going to get meta-data from the source
 		NDIlib_metadata_frame_t metadata;
-		if (NDIlib_recv_capture_v2(pNDI_recv, nullptr, nullptr, &metadata, 5000) == NDIlib_frame_type_metadata)
-		{	// Parse the XML
+		NDIlib_video_frame_v2_t frame;
+		if (NDIlib_recv_capture_v2(pNDI_recv, &frame, nullptr, &metadata, 5000) == NDIlib_frame_type_metadata)
+		{	
+			if (!frame.p_data) {
+				printf("No video frame data\n");
+			}
+			else {
+				printf("Frame size = %d bytes\n", frame.data_size_in_bytes);
+			}
+			
+			
+			// Parse the XML
 			try
 			{	rapidxml::xml_document<char> parser;
 				parser.parse<0>((char*)metadata.p_data);
@@ -45,9 +61,12 @@ int main(int argc, char* argv[])
 				// Get the tag
 				rapidxml::xml_node<char>* p_node = parser.first_node();
 
+				printf("xml parsed");
+
 				// Check its a node
 				if ((!p_node) || (p_node->type() != rapidxml::node_element))
 				{	// Not a valid message
+					printf("Not valid\n");
 				}
 				else if (!::strcasecmp(p_node->name(), "ndi_tally_echo"))
 				{	// Get the zoom factor
@@ -66,6 +85,10 @@ int main(int argc, char* argv[])
 
 			// Free any meta-data 
 			NDIlib_recv_free_metadata(pNDI_recv, &metadata);
+		}
+		else if (NDIlib_recv_capture_v2(pNDI_recv, &frame, nullptr, &metadata, 5000) == NDIlib_frame_type_none)
+		{
+			printf("timeout\n");
 		}
 	}
 

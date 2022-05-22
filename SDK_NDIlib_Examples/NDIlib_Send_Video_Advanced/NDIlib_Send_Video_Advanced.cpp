@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
 
 			// We now submit the frame. Note that this call will be clocked so that we end up submitting at exactly 59.94fps
 			NDIlib_send_send_video_v2(pNDI_send, &NDI_video_frame);
+			NDIlib_send_send_metadata(pNDI_send, &NDI_connection_type);
 
 			// Just display something helpful
 			if ((idx%100)==0)
