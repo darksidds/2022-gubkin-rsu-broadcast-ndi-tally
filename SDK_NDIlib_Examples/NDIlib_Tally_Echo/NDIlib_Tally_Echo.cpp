@@ -41,55 +41,64 @@ int main(int argc, char* argv[])
 	// Run for one minute
 	using namespace std::chrono;
 	using namespace std::this_thread;
+
+    int i = 0;
 	for (const auto start = high_resolution_clock::now(); high_resolution_clock::now() - start < minutes(5);)
 	{	// We are going to get meta-data from the source
-		NDIlib_metadata_frame_t metadata;
-		NDIlib_video_frame_v2_t frame;
-		switch (NDIlib_recv_capture_v2(pNDI_recv, &frame, nullptr, &metadata, 5000))
-		{
-		case NDIlib_frame_type_none:
-			printf("timeout\n");
-			break;
+        NDIlib_metadata_frame_t metadata;
+        NDIlib_video_frame_v2_t frame;
+        ++i;
+        std::cout << "I = " << i << std::endl;
+        switch (NDIlib_recv_capture_v2(pNDI_recv, &frame, nullptr, &metadata, 5000)) {
+        case NDIlib_frame_type_none: {
+            std::cout << "timeout" << std::endl;
+            break;
+        }
+        case NDIlib_frame_type_video: {
+            std::cout << "new video frame" << std::endl;
+            (!frame.p_data)
+                    ? printf("No video frame data\n")
+                    : printf("Frame size = %d bytes\n", frame.data_size_in_bytes);
+            NDIlib_recv_free_video_v2(pNDI_recv, &frame);
+            break;
+        }
+        case NDIlib_frame_type_metadata: {
+            std::cout << "new metadata frame" << std::endl;
+            // Parse the XML
+            rapidxml::xml_document<char> parser;
+            parser.parse<0>((char*)metadata.p_data);
 
-		case NDIlib_frame_type_video:
-			(!frame.p_data)
-				? printf("No video frame data\n")
-				: printf("Frame size = %d bytes\n", frame.data_size_in_bytes);
-			NDIlib_recv_free_video_v2(pNDI_recv, &frame);
-			break;
+            // Get the tag
+            rapidxml::xml_node<char>* p_node = parser.first_node();
 
-		case NDIlib_frame_type_metadata:
-			// Parse the XML
-			rapidxml::xml_document<char> parser;
-			parser.parse<0>((char*)metadata.p_data);
+            printf("xml parsed\n");
+            std::cout << "name = " << p_node->name() << std::endl;
 
-			// Get the tag
-			rapidxml::xml_node<char>* p_node = parser.first_node();
+            // Check its a node
+            if ((!p_node) || (p_node->type() != rapidxml::node_element))
+            {	// Not a valid message
+                printf("Not valid\n");
+            }
+            else if (!::strcasecmp(p_node->name(), "ndi_tally_echo"))
+            {	// Get the zoom factor
+                const rapidxml::xml_attribute<char>* p_on_program = p_node->first_attribute("on_program");
+                const rapidxml::xml_attribute<char>* p_on_preview = p_node->first_attribute("on_preview");
 
-			printf("xml parsed\n");
-			std::cout << p_node->name() << "\n";
-
-			// Check its a node
-			if ((!p_node) || (p_node->type() != rapidxml::node_element))
-			{	// Not a valid message
-				printf("Not valid\n");
-			}
-			else if (!::strcasecmp(p_node->name(), "ndi_tally_echo"))
-			{	// Get the zoom factor
-				const rapidxml::xml_attribute<char>* p_on_program = p_node->first_attribute("on_program");
-				const rapidxml::xml_attribute<char>* p_on_preview = p_node->first_attribute("on_preview");
-
-				// Display the tally state
-				printf("Tally, on_program = %s, on_preview = %s\n",
-					p_on_program ? p_on_program->value() : "false",
-					p_on_preview ? p_on_preview->value() : "false");
-			}
-			// Free any meta-data 
-			NDIlib_recv_free_metadata(pNDI_recv, &metadata);
-			sleep_for(seconds(5));
-			break;
-		}
-	}
+                // Display the tally state
+                printf("Tally, on_program = %s, on_preview = %s\n",
+                       p_on_program ? p_on_program->value() : "false",
+                       p_on_preview ? p_on_preview->value() : "false");
+            }
+            // Free any meta-data
+            NDIlib_recv_free_metadata(pNDI_recv, &metadata);
+//            sleep_for(seconds(5));
+            break;
+        }
+        default:
+            std::cout << "default case" << std::endl;
+            break;
+        } // END switch
+    } // END for-loop
 
 	// Destroy the receiver
 	NDIlib_recv_destroy(pNDI_recv);

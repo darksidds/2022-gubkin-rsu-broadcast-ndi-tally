@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 	// Provide a meta-data registration that allows people to know what we are. Note that this is optional.
 	// Note that it is possible for senders to also register their preferred video formats.
 	NDIlib_metadata_frame_t NDI_connection_type; 
-	NDI_connection_type.p_data = "<ndi_product long_name=\"NDILib Send Example.\" "
+    NDI_connection_type.p_data = "<ndi_product long_name=\"NDILib Send Example.\" "
 								 "             short_name=\"NDILib Send\" "
 								 "             manufacturer=\"CoolCo, inc.\" "
 								 "             version=\"1.000.000\" "
@@ -119,8 +119,8 @@ int main(int argc, char* argv[])
 			NDIlib_send_send_metadata(pNDI_send, &NDI_connection_type);
 
 			// Just display something helpful
-			if ((idx%100)==0)
-				printf("Frame number %d sent. %s%s\n", 1+idx, NDI_tally.on_program ? "PGM " : "", NDI_tally.on_preview ? "PVW " : "");
+            // if ((idx%100)==0)
+            printf("Frame number %d sent. %s%s\n", 1+idx, NDI_tally.on_program ? "PGM " : "---", NDI_tally.on_preview ? "PVW " : "---");
 		}		
 	}
 
