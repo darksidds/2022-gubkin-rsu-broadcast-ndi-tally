@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <atomic>
+#include <iostream>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
 	if (!NDIlib_initialize())
 	{	// Cannot run NDI. Most likely because the CPU is not sufficient (see SDK documentation).
 		// you can check this directly with a call to NDIlib_is_supported_CPU()
-		printf("Cannot run NDI.");
+		std::cout << "Cannot run NDI\n";
 		return 0;
 	}
 
@@ -72,7 +73,7 @@ int main(int argc, char* argv[])
 	{	// We do not use any resources until we are actually connected.
 		if (!NDIlib_send_get_no_connections(pNDI_send, 10000))
 		{	// Display status
-			printf("No current connections, so no rendering needed (%d).\n", idx);
+			std::cout << "No current connections, so no rendering needed (" << idx << ")\n";
 		}
 		else
 		{	// Have we received any meta-data
@@ -86,7 +87,7 @@ int main(int argc, char* argv[])
 				}
 
 				// Display that we got meta-data
-				printf("Received meta-data : %s\n", metadata_desc.p_data);
+				std::cout << "Received meta-data : " << metadata_desc.p_data << "\n";
 
 				// We must free the data here
 				NDIlib_send_free_metadata(pNDI_send, &metadata_desc);
@@ -120,7 +121,7 @@ int main(int argc, char* argv[])
 
 			// Just display something helpful
             // if ((idx%100)==0)
-            printf("Frame number %d sent. %s%s\n", 1+idx, NDI_tally.on_program ? "PGM " : "---", NDI_tally.on_preview ? "PVW " : "---");
+			std::cout << "Frame number " << 1 + idx << " sent. " << (NDI_tally.on_program ? "PGM " : "---") << (NDI_tally.on_preview ? "PVW " : "---") << std::endl;
 		}		
 	}
 
