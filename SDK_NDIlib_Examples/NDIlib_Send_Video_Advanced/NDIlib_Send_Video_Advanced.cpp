@@ -120,8 +120,10 @@ int main(int argc, char* argv[])
 			NDIlib_send_send_metadata(pNDI_send, &NDI_connection_type);
 
 			// Just display something helpful
+			const auto& is_program = (NDI_tally.on_program) ? "PGM " : "---";
+			const auto& is_preview = (NDI_tally.on_preview) ? "PVW " : "---";
             // if ((idx%100)==0)
-			std::cout << "Frame number " << 1 + idx << " sent. " << (NDI_tally.on_program ? "PGM " : "---") << (NDI_tally.on_preview ? "PVW " : "---") << std::endl;
+			std::cout << "Frame number " << 1 + idx << " sent. " << is_program << is_preview << std::endl;
 		}		
 	}
 

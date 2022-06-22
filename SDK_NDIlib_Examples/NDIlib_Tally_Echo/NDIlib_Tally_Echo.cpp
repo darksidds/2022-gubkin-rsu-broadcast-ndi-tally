@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	if (!pNDI_recv) return 0;
 
     NDIlib_tally_t NDI_tally;
-    NDI_tally.on_program = "why";
+    NDI_tally.on_program = "on_program";
     NDIlib_recv_set_tally(pNDI_recv, &NDI_tally);
 
 	// Run for one minute
@@ -95,12 +95,13 @@ int main(int argc, char* argv[])
                 }
                 else // if (!::strcasecmp(p_node->name(), "ndi_tally_echo"))
                 {	// Get the zoom factor
-                    const rapidxml::xml_attribute<char>* p_on_program = p_node->first_attribute("on_program");
-                    const rapidxml::xml_attribute<char>* p_on_preview = p_node->first_attribute("on_preview");
+                    const rapidxml::xml_attribute<char>* p_on_program = p_node->first_attribute("short_name");
+                    const rapidxml::xml_attribute<char>* p_on_preview = p_node->first_attribute(0);
 
+                    const auto& is_program = (p_on_program) ? p_on_program->value() : "false";
+                    const auto& is_preview = (p_on_preview) ? p_on_preview->value() : "false";
                     // Display the tally state
-                    std::cout << "Tally, on_program = " << (p_on_program ? p_on_program->value() : "false") << \
-                        ", on_preview = " << (p_on_preview ? p_on_preview->value() : "false") << std::endl;
+                    std::cout << "Tally, on_program = " << is_program << ", on_preview = " << is_preview << std::endl;
                 }
                 // Free any meta-data
                 NDIlib_recv_free_metadata(pNDI_recv, &metadata);
