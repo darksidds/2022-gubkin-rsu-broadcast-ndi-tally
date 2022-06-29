@@ -15,7 +15,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-#        tally_echo.cpp
+#        NDIlib_Tally_Echo.cpp
         main.cpp
         mainwindow.cpp
         mainwindow.h

@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "NDIlib_Tally_Echo.cpp"
+#include "tally_echo.cpp"
+#include "qeventloop.h"
+#include "qwindowdefs.h"
+#include <QTimer>
 
 //void tally_echo(QString ndi_name, Ui::MainWindow& ui, int& flag, int& i, NDIlib_recv_instance_t& pNDI_recv, NDIlib_recv_create_v3_t& recv_desc);
 
@@ -32,13 +35,19 @@ void MainWindow::on_pushButton_clicked()
 
     i = 0;
     flag = 0;
-    while (!flag)
+
+    QEventLoop loop;
+    QTimer timer;
+
+    if (!flag)
     {
         NDIlib_metadata_frame_t metadata;
         NDIlib_video_frame_v2_t frame;
 
         tally_echo(ui, &flag, &i, &pNDI_recv, &recv_desc, &metadata, &frame);
     }
+    timer.start(500);
+    loop.exec();
 }
 
 
