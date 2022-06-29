@@ -15,10 +15,11 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-#        NDIlib_Tally_Echo.cpp
         main.cpp
         mainwindow.cpp
         mainwindow.h
+        echo_class.cpp
+        echo_class.h
         rapidxml/rapidxml.hpp
         rapidxml/rapidxml_print.hpp
         mainwindow.ui
