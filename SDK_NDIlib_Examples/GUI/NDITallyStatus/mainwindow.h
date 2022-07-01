@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <Processing.NDI.Lib.h>
 
+class echo_class;
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -13,8 +15,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr, echo_class *e_c = nullptr);
     ~MainWindow();
+
+    echo_class *echo;
 
     virtual QString StringValue();
     void textAppend(QString text);
@@ -25,6 +29,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
 
 };
 #endif // MAINWINDOW_H
