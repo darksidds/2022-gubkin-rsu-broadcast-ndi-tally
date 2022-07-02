@@ -18,15 +18,16 @@ void echo_class::end_echo_class()
 }
 
 
-void echo_class::init_echo_class(QString name)
+void echo_class::init_echo_class()
 {
-    QString ndi_name = name;
+    QString ndi_name = mw->StringValue();
     const QByteArray str = ndi_name.toUtf8();
     recv_desc.source_to_connect_to.p_ndi_name = str.constData();
+    emit isInitialized();
 }
 
 
-void echo_class::setMW(MainWindow* mainwindow)
+/* void echo_class::setMW(MainWindow* mainwindow)
 {
     mw = mainwindow;
 
@@ -42,11 +43,13 @@ void echo_class::setMW(MainWindow* mainwindow)
 
     i = 0;
     flag = 0;
-}
+} */
 
 
 void echo_class::echoing()
 {
+    while(1)
+    {
     NDIlib_metadata_frame_t metadata;
     NDIlib_video_frame_v2_t frame;
 
@@ -54,8 +57,7 @@ void echo_class::echoing()
     qDebug() << recv_desc.source_to_connect_to.p_ndi_name << "\n";
     // We are going to get meta-data from the source
 
-    mw->textAppend(QString("Frame = %1").arg(i));
-    //    ui->plainTextEdit->appendPlainText(QString("Frame = %1").arg(i));
+    //mw->textAppend(QString("Frame = %1").arg(i));
     bool sync_meta = 0;
     bool sync_vid = 0;
     bool sync_timeout = 0;
@@ -68,7 +70,7 @@ void echo_class::echoing()
         case NDIlib_frame_type_none: {
             if (sync_timeout == 1) break;
     //                std::cout << "timeout\n";
-            mw->textAppend("timeout");
+            emit isnothingCaptured();
             qDebug() << "timeout\n";
             sync_timeout = 1;
             break;
@@ -80,13 +82,14 @@ void echo_class::echoing()
     //                    ? std::cout << "No video frame data\n"
     //                    : std::cout << "Frame size = " << frame.data_size_in_bytes << " bytes\n";
             NDIlib_recv_free_video_v2(pNDI_recv, &frame);
+            emit isvideoCaptured();
             sync_vid = 1;
             break;
         }
         case NDIlib_frame_type_metadata: {
             qDebug() << "meta check\n";
             if (sync_meta == 1) break;
-            mw->textAppend("new metadata frame");
+            //mw->textAppend("new metadata frame");
             // Parse the XML
             rapidxml::xml_document<char> parser;
             parser.parse<0>((char*)metadata.p_data);
@@ -94,13 +97,13 @@ void echo_class::echoing()
             // Get the tag
             rapidxml::xml_node<char>* p_node = parser.first_node();
 
-            mw->textAppend("xml parsed");
-            mw->textAppend(QString("name = %1").arg(p_node->name()));
+            //mw->textAppend("xml parsed");
+            //mw->textAppend(QString("name = %1").arg(p_node->name()));
 
             // Check its a node
             if ((!p_node) || (p_node->type() != rapidxml::node_element))
             {	// Not a valid message
-                mw->textAppend("Not valid");
+                //mw->textAppend("Not valid");
             }
             else // if (!::strcasecmp(p_node->name(), "ndi_tally_echo"))
             {	// Get the zoom factor
@@ -110,11 +113,12 @@ void echo_class::echoing()
                 const auto& is_program = (p_on_program) ? p_on_program->value() : "false";
                 const auto& is_preview = (p_on_preview) ? p_on_preview->value() : "false";
                 // Display the tally state
-                mw->textAppend(QString("Tally, on_program = %1, on_preview = %2").arg(is_program, is_preview));
+                //mw->textAppend(QString("Tally, on_program = %1, on_preview = %2").arg(is_program, is_preview));
                 qDebug() << "on_program " << is_program << "\n";
             }
             // Free any meta-data
             NDIlib_recv_free_metadata(pNDI_recv, &metadata);
+            emit ismetadataCaptured();
             sync_meta = 1;
             break;
         }
@@ -132,20 +136,7 @@ void echo_class::echoing()
     ++i;
     qDebug() << "flag = " << flag << "\n";
 // Finished
+    }
 }
 
-
-void echo_class::run()
-{
-    QTimer timer;
-    timer.setInterval(500);
-    connect(&timer, SIGNAL(timeout()), this, SLOT(echoing()));
-
-//    connect(&timer, SIGNAL(started()), thread, SLOT(start()));
-
-//    connect(tally_echo, &echo_class::end_echo_class, thread, &QThread::quit);
-
-    timer.start();
-    exec();
-}
 

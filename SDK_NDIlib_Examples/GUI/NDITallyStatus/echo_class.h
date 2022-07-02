@@ -2,12 +2,10 @@
 #define ECHO_CLASS_H
 
 #include "mainwindow.h"
-#include <QThread>
 #include <Processing.NDI.Lib.h>
-#include <cstddef>
 
 
-class echo_class : public QThread
+class echo_class : public QObject
 {
     Q_OBJECT
 
@@ -16,28 +14,23 @@ public:
 
     int i;
     bool flag;
+    MainWindow *mw;
 
 signals:
-    void initialized();
-    void metadataCaptured();
-    void videoCaptured();
-    void nothingCaptured();
+    void isInitialized();
+    void ismetadataCaptured();
+    void isvideoCaptured();
+    void isnothingCaptured();
 
 public slots:
-    void end_echo_class();
-    void init_echo_class(QString name);
     void echoing();
-    void setMW(MainWindow* mainwindow);
-
-protected:
-    void run() override;
+    void init_echo_class();
+    void end_echo_class();
 
 private:
     NDIlib_recv_create_v3_t recv_desc;
     NDIlib_tally_t NDI_tally;
     NDIlib_recv_instance_t pNDI_recv;
-
-    MainWindow *mw;
 
 };
 
