@@ -16,7 +16,7 @@ EchoClass::EchoClass(QObject *parent)
 void EchoClass::endEchoClass()
 {
     NDIlib_recv_destroy(pNDI_recv);
-    NDIlib_destroy();
+    qDebug() << "ndi destroyed\n";
 }
 
 

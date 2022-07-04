@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
     QObject::connect(echo, &EchoClass::isInitialized, echo, &EchoClass::echoing);
 
     QObject::connect(thread, &QThread::finished, echo, &EchoClass::endEchoClass);
-    QObject::connect(thread, &QThread::finished, echo, &EchoClass::deleteLater);
-    QObject::connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    //QObject::connect(thread, &QThread::finished, echo, &EchoClass::deleteLater);
+    //QObject::connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
     return a.exec();
 }
