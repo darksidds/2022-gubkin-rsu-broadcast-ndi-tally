@@ -8,6 +8,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class EchoClass;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -18,6 +20,7 @@ public:
 
     QString StringValue();
     QThread *thread;
+    EchoClass *echo;
 
     void metadataCaptured();
     void videoCaptured();

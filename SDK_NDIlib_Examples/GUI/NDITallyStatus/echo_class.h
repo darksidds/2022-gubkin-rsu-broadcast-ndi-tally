@@ -1,16 +1,18 @@
 #ifndef ECHO_CLASS_H
 #define ECHO_CLASS_H
 
-#include "mainwindow.h"
 #include <Processing.NDI.Lib.h>
+#include <QObject>
+
+class MainWindow;
 
 
-class echo_class : public QObject
+class EchoClass : public QObject
 {
     Q_OBJECT
 
 public:
-    echo_class(QObject *parent = nullptr);
+    EchoClass(QObject *parent = nullptr);
 
     int i;
     bool flag;
@@ -24,8 +26,8 @@ signals:
 
 public slots:
     void echoing();
-    void init_echo_class();
-    void end_echo_class();
+    void initEchoClass();
+    void endEchoClass();
 
 private:
     NDIlib_recv_create_v3_t recv_desc;

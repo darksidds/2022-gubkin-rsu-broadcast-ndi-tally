@@ -1,5 +1,6 @@
 # Prerequisites
 *.d
+*.user
 
 # Compiled Object files
 *.slo
@@ -33,4 +34,4 @@
 
 .vscode/*
 build/*
-NDITallyStatus/build/*
+SDK_NDIlib_Examples/GUI/NDITallyStatus/build/*

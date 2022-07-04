@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(NDIlib_Examples)
 
-set(CMAKE_INSTALL_PREFIX ../..)
+set(CMAKE_INSTALL_PREFIX ..)
 
 add_executable(Tally_Echo NDIlib_Tally_Echo/NDIlib_Tally_Echo.cpp)
 add_executable(Send_Video_Advanced NDIlib_Send_Video_Advanced/NDIlib_Send_Video_Advanced.cpp)

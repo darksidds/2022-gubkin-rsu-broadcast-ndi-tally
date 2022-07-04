@@ -13,19 +13,22 @@ int main(int argc, char *argv[])
 
     QThread* thread = new QThread();
     w->thread = thread;
-    echo_class* echo = new echo_class();
+    EchoClass* echo = new EchoClass();
     echo->mw = w;
     echo->moveToThread(thread);
+    w->echo = echo;
 
-    QObject::connect(echo, &echo_class::ismetadataCaptured, w, &MainWindow::metadataCaptured);
-    QObject::connect(echo, &echo_class::isvideoCaptured, w, &MainWindow::videoCaptured);
-    QObject::connect(echo, &echo_class::isnothingCaptured, w, &MainWindow::nothingCaptured);
+    QObject::connect(echo, &EchoClass::ismetadataCaptured, w, &MainWindow::metadataCaptured);
+    QObject::connect(echo, &EchoClass::isvideoCaptured, w, &MainWindow::videoCaptured);
+    QObject::connect(echo, &EchoClass::isnothingCaptured, w, &MainWindow::nothingCaptured);
 
-    QObject::connect(thread, &QThread::started, echo, &echo_class::init_echo_class);
-    QObject::connect(echo, &echo_class::isInitialized, w, &MainWindow::Initialized);
-    QObject::connect(echo, &echo_class::isInitialized, echo, &echo_class::echoing);
+    QObject::connect(thread, &QThread::started, echo, &EchoClass::initEchoClass);
+    QObject::connect(echo, &EchoClass::isInitialized, w, &MainWindow::Initialized);
+    QObject::connect(echo, &EchoClass::isInitialized, echo, &EchoClass::echoing);
 
-
+    QObject::connect(thread, &QThread::finished, echo, &EchoClass::endEchoClass);
+    QObject::connect(thread, &QThread::finished, echo, &EchoClass::deleteLater);
+    QObject::connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
     return a.exec();
 }
